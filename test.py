@@ -3,38 +3,11 @@ import csv
 LAYER_LIST = [2, 3, 1]
 np.random.seed(0)
 
-class Linear():
-    def __init__(self, in_dimension, out_dimension, activation_fn):
-        self.W = np.random.randn(out_dimension, in_dimension)
-        self.b = np.random.randn(out_dimension, 1)
-        self.activation_fn = activation_fn
-        return
-
-    def forward(self, X):
-        return self.activation_fn(self.W.dot(X) + self.b)
-
-    def backward(self):
-        pass
-
-    def __repr__(self):
-        return "Linear(W=\n{}\nb=\n{})".format(repr(self.W), repr(self.b))
-
-
 def mse(y, y_true):
     return np.mean((y - y_true) ** 2) / 2
 
 def cross_entropy(y, y_true):
     return np.mean(y_true*np.log(y) + (1-y_true)*np.log(1-y))
-
-def tanh(x):
-    return np.tanh(x)
-
-def sigm(x):
-    return 1/(1+np.exp(-x))
-
-def relu(x):
-    # pretty f***ing smart :D
-    return x * (x > 0)
 
 
 def sgd(X, y_true, layer_list, batch_size=1, epochs=1):
