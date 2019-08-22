@@ -1,6 +1,7 @@
 import numpy as np
 import csv
 LAYER_LIST = [2, 3, 1]
+LEARNING_RATE=1e-3
 np.random.seed(0)
 
 class MSE():
@@ -12,7 +13,10 @@ class MSE():
 
 
     def backward(self, y_true, y_pred):
-        return np.mean(y_true - y_pred, axis=0, keepdims=True)
+        #print("y_true.shape", y_true.shape)
+        #print("y_pred.shape", y_pred.shape)
+        #print(y_pred)
+        return np.mean(y_true - y_pred, axis=1, keepdims=True)
 
 class Linear():
     def __init__(self, in_dim, out_dim):
@@ -44,36 +48,49 @@ class Layer():
         self.nlin = Sigmoid()
         return
 
-def sgd(X, y_true, layer_list, loss, batch_size=1, epochs=1):
-    for i in range(1):#X.shape[0]/batch_size):
-        start = i*batch_size
-        end = start + batch_size
-        X_batch = X[start:end, :]
-        y_batch = X[start:end, :]
-        sgd_step(X_batch.T, y_batch.T, layer_list, loss)
+def sgd(X, y_true, layer_list, loss, batch_size=4, epochs=1):
+    #print("X.shape {}\ny_true.shape {}".format(X.shape, y_true.shape))
+    for epoch in range(1, epochs+1):
+        print("EPOCH: {}".format(epoch))
+        for i in range(1):#X.shape[0]//batch_size):
+            start = i*batch_size
+            end = start + batch_size
+            X_batch = X[start:end, :]
+            y_batch = y_true[start:end, :]
+            sgd_step(X_batch.T, y_batch.T, layer_list, loss)
     return
 
 def sgd_step(X, y, layer_list, loss):
+    #print("y", y)
     if layer_list == []:
-        print(loss.forward(X, y))
+        #print(loss.forward(X, y))
+        print(loss.backward(X, y).shape)
         return loss.backward(X, y)
     else:
         layer = layer_list[0]
-        a = layer.lin.forward(X)
-        z = layer.nlin.forward(a)
-        grad = sgd_step(z, y, layer_list[1:], loss)
+        z = layer.lin.forward(X)
+        a = layer.nlin.forward(z)
+        #print("a.shape", a.shape)
+        grad = sgd_step(a, y, layer_list[1:], loss)
+        #print("grad.shape", grad.shape)
         # TODO: update
         n_grad = layer.nlin.backward(grad)
+        print("n_grad.shape", n_grad.shape)
+        dw = X.T * n_grad
+        #print(dw.shape)
+        #print(layer.lin.W.shape)
         l_grad = layer.lin.backward(n_grad)
+        layer.lin.W -= LEARNING_RATE*dw
+        layer.lin.b -= LEARNING_RATE*n_grad
         return l_grad
 
 if __name__ == '__main__':
     with open("dataset.csv", "r") as f:
         dataset = np.array(list(csv.reader(f, delimiter=",")), dtype=np.float64)
-    print(dataset.shape)
-    print(dataset[:10, :])
+    #print(dataset.shape)
+    #print(dataset[:10, :])
     layers = [Layer(i, o) for i, o in zip(LAYER_LIST, LAYER_LIST[1:])]
     #print(layers)
     loss = MSE()
-    sgd(dataset[:, :2], dataset[:, 2], layers, loss)
+    sgd(dataset[:, :2], dataset[:, 2:], layers, loss, epochs=15)
 
