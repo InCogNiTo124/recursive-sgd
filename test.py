@@ -1,8 +1,9 @@
 import numpy as np
 import csv
-from losses import MSE
+from losses import CE
+#from losses import MSE
 LAYER_LIST = [2, 3,5, 1]
-LEARNING_RATE=8e-4
+LEARNING_RATE=1e-3
 np.random.seed(0)
 
 
@@ -51,7 +52,7 @@ def sgd(X, y_true, layer_list, loss, batch_size=4, epochs=1):
 def sgd_step(X, y, layer_list, loss):
     if layer_list == []:
         #print("y_true {} \t y_pred {} \t loss {}".format(y, X, loss.forward(y, X)))
-        print(loss.forward(y, X))
+        print(loss.forward(X, y))
         return loss.backward(X, y)
     else:
         layer = layer_list[0]
@@ -80,6 +81,7 @@ if __name__ == '__main__':
     #print(dataset[:10, :])
     layers = [Layer(i, o) for i, o in zip(LAYER_LIST, LAYER_LIST[1:])]
     #print(layers)
-    loss = MSE()
-    sgd(dataset[:, :2], dataset[:, 2:], layers, loss, batch_size=64, epochs=10000)
+    loss = CE()
+    #loss = MSE()
+    sgd(dataset[:, :2], dataset[:, 2:], layers, loss, batch_size=1024, epochs=100000)
 
