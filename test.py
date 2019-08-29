@@ -1,7 +1,7 @@
 import numpy as np
 import csv
-LAYER_LIST = [2, 4, 7, 1]
-LEARNING_RATE=1e-4
+LAYER_LIST = [2, 3, 1]
+LEARNING_RATE=1e-3
 np.random.seed(0)
 
 class MSE():
@@ -9,7 +9,7 @@ class MSE():
         return
 
     def forward(self, y_true, y_pred):
-        print("y_true {} \t y_pred {}".format(y_true, y_pred))
+        #print("y_true {} \t y_pred {}".format(y_true, y_pred))
         return np.mean((y_true - y_pred)**2)
 
 
@@ -23,8 +23,8 @@ class MSE():
 
 class Linear():
     def __init__(self, in_dim, out_dim):
-        self.W = np.random.randn(out_dim, in_dim)*0.1
-        self.b = np.random.randn(out_dim, 1)*0.1
+        self.W = np.random.randn(out_dim, in_dim)*0.2
+        self.b = np.random.randn(out_dim, 1)*0.2
         return
 
     def forward(self, X):
@@ -75,8 +75,8 @@ def sgd_step(X, y, layer_list, loss):
 #        print("W.shape {} \t X.shape {} \t a.shape {}".format(layer.lin.W.shape, X.shape, a.shape))
         grad = sgd_step(a, y, layer_list[1:], loss)
         # TODO: update
-        n_grad = layer.nlin.backward(grad)
-        print("n_grad", n_grad)
+        n_grad = grad * layer.nlin.backward(a)
+        #print("n_grad", n_grad)
 #        print("grad.shape", n_grad.shape, end='\t')
 #        print("X.T.shape", X.T.shape)
         #dw = np.mean(X.T * n_grad, axis=1, keepdims=True)
@@ -96,5 +96,5 @@ if __name__ == '__main__':
     layers = [Layer(i, o) for i, o in zip(LAYER_LIST, LAYER_LIST[1:])]
     #print(layers)
     loss = MSE()
-    sgd(dataset[:, :2], dataset[:, 2:], layers, loss, batch_size=4, epochs=1000)
+    sgd(dataset[:, :2], dataset[:, 2:], layers, loss, batch_size=dataset.shape[0]//2, epochs=10000)
 
