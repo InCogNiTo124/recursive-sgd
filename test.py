@@ -1,6 +1,7 @@
 import numpy as np
 import csv
 from losses import CE
+from layers import Sigmoid
 #from losses import MSE
 LAYER_LIST = [2, 3,5, 1]
 LEARNING_RATE=1e-3
@@ -17,24 +18,16 @@ class Linear():
         return self.W.dot(X) + self.b
 
     def backward(self, delta):
-        #print(self.W.shape)
-        #print(delta.shape)
         return self.W.T.dot(delta)
 
-class Sigmoid():
-    def __init__(self):
-        return
-
-    def forward(self, X):
-        return 1/(1+np.exp(-X))
-
-    def backward(self, delta):
-        return delta*(1-delta)
-
 class Layer():
-    def __init__(self, in_dim, out_dim):
+    def __init__(self, in_dim, out_dim, activation=Sigmoid()):
+        assert in_dim > 0
+        assert out_dim > 0
+        in_dim = int(in_dim)
+        out_dim = int(out_dim)
         self.lin = Linear(in_dim, out_dim)
-        self.nlin = Sigmoid()
+        self.nlin = activation
         return
 
 def sgd(X, y_true, layer_list, loss, batch_size=4, epochs=1):
