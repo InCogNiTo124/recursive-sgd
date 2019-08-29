@@ -1,25 +1,10 @@
 import numpy as np
 import csv
-LAYER_LIST = [2, 3, 1]
-LEARNING_RATE=1e-3
+from losses import MSE
+LAYER_LIST = [2, 3,5, 1]
+LEARNING_RATE=8e-4
 np.random.seed(0)
 
-class MSE():
-    def __init__(self):
-        return
-
-    def forward(self, y_true, y_pred):
-        #print("y_true {} \t y_pred {}".format(y_true, y_pred))
-        return np.mean((y_true - y_pred)**2)
-
-
-    def backward(self, y_true, y_pred):
-        #print("y_true.shape", y_true.shape)
-        #print("y_pred.shape", y_pred.shape)
-        #print(y_pred)
-        #return np.mean(y_true - y_pred, axis=1, keepdims=True)
-        return y_true - y_pred
-        #return y_pred - y_true
 
 class Linear():
     def __init__(self, in_dim, out_dim):
@@ -96,5 +81,5 @@ if __name__ == '__main__':
     layers = [Layer(i, o) for i, o in zip(LAYER_LIST, LAYER_LIST[1:])]
     #print(layers)
     loss = MSE()
-    sgd(dataset[:, :2], dataset[:, 2:], layers, loss, batch_size=dataset.shape[0]//2, epochs=10000)
+    sgd(dataset[:, :2], dataset[:, 2:], layers, loss, batch_size=64, epochs=10000)
 
