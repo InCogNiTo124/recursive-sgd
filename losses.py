@@ -19,7 +19,7 @@ class MSE(Loss):
         return np.mean((y_true - y_pred)**2)
 
     def backward(self, y_true, y_pred):
-        return y_pred - y_true
+        return y_true - y_pred
 
 class CE(Loss):
     def __init__(self):
