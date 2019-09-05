@@ -4,8 +4,8 @@ import csv
 #from layers import Tanh as Sigmoid
 from layers import Sigmoid
 from losses import MSE
-LAYER_LIST = [2, 2, 2]
-LEARNING_RATE=0.5
+LAYER_LIST = [2, 3, 1]
+LEARNING_RATE=0.5 #1e-3
 np.random.seed(0)
 
 
@@ -54,23 +54,30 @@ def sgd_step(X, y, layer_list, loss):
     else:
         layer = layer_list[0]
         z = layer.lin.forward(X)
-        #print("z", z)
+        print("z", z)
         a = layer.nlin.forward(z)
-        #print("a", a)
+        print("a", a)
 #       #print("W.shape {} \t X.shape {} \t a.shape {}".format(layer.lin.W.shape, X.shape, a.shape))
         grad = sgd_step(a, y, layer_list[1:], loss)
-        #print("g", grad)
+        print("g", grad)
         # TODO: update
-        #print("s", layer.nlin.backward(a))
-        #print("X", X)
-        n_grad = grad * layer.nlin.backward(a)
-        dw = n_grad * X.T
+        print("s", layer.nlin.backward(a))
+        print("X", X)
+        try:
+            n_grad = grad * layer.nlin.backward(a)
+            dw = n_grad * X.T
+        except:
+            print(grad.shape)
+            print(n_grad.shape)
+            print(layer.nlin.backward(a).shape)
+            print(X.shape)
+            raise ValueError
         #dw = np.mean(X.T * n_grad, axis=1, keepdims=Tru
-        #print("dw", dw)
+        print("dw", dw)
         assert dw.shape == layer.lin.W.shape
-        l_grad = n_grad.T.dot(layer.lin.W)
+        l_grad = layer.lin.W.T @ n_grad
         layer.lin.W -= LEARNING_RATE*dw
-        #print("\t NEW W\n", layer.lin.W)
+        print("\t NEW W\n", layer.lin.W)
         #layer.lin.b -= LEARNING_RATE*np.mean(n_grad, axis=1, keepdims=True)
         return l_grad
 
@@ -84,7 +91,6 @@ if __name__ == '__main__':
     layers[0].lin.b = np.array([[0.35], [0.35]])
     layers[1].lin.W = np.array([[0.40, 0.45], [0.50, 0.55]])
     layers[1].lin.b = np.array([[0.60], [0.60]])
-    #print(layers)
     #loss = CE()
     loss = MSE()
     # tanh trick
@@ -97,4 +103,4 @@ if __name__ == '__main__':
         loss,
         batch_size=1,
         epochs=10000)
-
+    #TODO: add another fake example
