@@ -5,7 +5,7 @@ from losses import MSE, CE
 ACTIVATION_DICT = {"relu": ReLU(), "sigmoid": Sigmoid(), "tanh": Tanh()}
 
 LAYER_LIST = [2, 8, 14, 6, 1]
-ACTIVATION_LIST = ["tanh", "sigmoid", "tanh", "sigmoid"]
+ACTIVATION_LIST = ["relu", "sigmoid", "tanh", "sigmoid"]
 LEARNING_RATE = 0.1
 np.random.seed(0)
 
@@ -58,9 +58,11 @@ def sgd_step(X, y, layer_list, loss):
         grad = sgd_step(a, y, layer_list[1:], loss)
         n_grad = grad * layer.nlin.backward(a)
         dw = n_grad.dot(X.T)
+        db = np.mean(n_grad, axis=1, keepdims=True)
         assert dw.shape == layer.lin.W.shape
         l_grad = layer.lin.W.T @ n_grad
         layer.lin.W -= LEARNING_RATE*dw
+        layer.lin.b -= LEARNING_RATE*db
         return l_grad
 
 if __name__ == '__main__':
