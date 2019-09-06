@@ -1,9 +1,11 @@
 import numpy as np
 import csv
-#from layers import Sigmoid
-from layers import Tanh as Sigmoid
-from losses import MSE
-LAYER_LIST = [2, 3, 1]
+from layers import Sigmoid, ReLU, Tanh
+from losses import MSE, CE
+ACTIVATION_DICT = {"relu": ReLU(), "sigmoid": Sigmoid(), "tanh": Tanh()}
+
+LAYER_LIST = [2, 8, 14, 6, 1]
+ACTIVATION_LIST = ["tanh", "sigmoid", "tanh", "sigmoid"]
 LEARNING_RATE = 0.1
 np.random.seed(0)
 
@@ -21,14 +23,18 @@ class Linear():
         return self.W.T.dot(delta)
 
 class Layer():
-    def __init__(self, in_dim, out_dim, activation=Sigmoid()):
+    def __init__(self, in_dim, out_dim, activation=None):
         assert in_dim > 0
         assert out_dim > 0
         assert type(in_dim) == type(0) # INT
         assert type(out_dim) == type(0) # INT
         self.lin = Linear(in_dim, out_dim)
-        self.nlin = activation
+        self.nlin = activation if activation is not None else Sigmoid()
         return
+
+    def forward(self, X):
+        return self.nlin.forward(self.lin.forward(X))
+
 
 def sgd(X, y_true, layer_list, loss, batch_size=4, epochs=1):
     for epoch in range(1, epochs+1):
@@ -43,7 +49,7 @@ def sgd(X, y_true, layer_list, loss, batch_size=4, epochs=1):
 
 def sgd_step(X, y, layer_list, loss):
     if layer_list == []:
-        print("y_true {} \n y_pred {} \n\t\t loss {}".format(y, X, loss.forward(y, X)))
+        print("y_true {} \n y_pred {} \n\t\t loss {}".format(y, X, loss.forward(X, y)))
         return loss.backward(X, y)
     else:
         layer = layer_list[0]
@@ -60,14 +66,31 @@ def sgd_step(X, y, layer_list, loss):
 if __name__ == '__main__':
     with open("dataset.csv", "r") as f:
         dataset = np.array(list(csv.reader(f, delimiter=",")), dtype=np.float64)
-    layers = [Layer(i, o) for i, o in zip(LAYER_LIST, LAYER_LIST[1:])]
-    loss = MSE()
-    dataset[dataset[:, 2] == 0, 2] = -1
+    layers = [Layer(i, o, ACTIVATION_DICT[a]) for i, o, a in zip(LAYER_LIST, LAYER_LIST[1:], ACTIVATION_LIST)]
+    #loss = MSE()
+    loss = CE()
+    #dataset[dataset[:, 2] == 0, 2] = -1
+    #dataset = dataset[:8, :]
     sgd(dataset[:, :2], dataset[:, 2:],
         layers,
         loss,
-        batch_size=32,
-        epochs=1000)
+        batch_size=8,
+        epochs=200)
+    # TESTING
+    x = np.arange(0, 1, 1/100)
+    y = np.arange(0, 1, 1/100)
+    a = np.transpose([np.tile(x, len(y)), np.repeat(y, len(x))])
+    y_test = a.copy().T
+    for layer in layers:
+       y_test = layer.forward(y_test)
+    THR = 0.5 
+    y_test[y_test >= THR] = 1
+    y_test[y_test < THR] = 0
+
+    import matplotlib.pyplot as plt
+    plt.scatter(a[:, 0], a[:, 1], c=y_test.flatten().astype(int), s=1)
+    plt.show()
+
     #TODO:
     # - refactor layer class
     # - add Tanh and relu activation
