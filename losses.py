@@ -4,10 +4,10 @@ class Loss():
     def __init__(self):
         return
 
-    def forward(self, y_true, y_pred):
+    def forward(self, y_pred, y_true):
         pass
 
-    def backward(self, y_true, y_pred):
+    def backward(self, y_pred, y_true):
         pass
 
 class MSE(Loss):
@@ -18,8 +18,8 @@ class MSE(Loss):
     def forward(self, y_pred, y_true):
         return np.mean((y_true - y_pred)**2)
 
-    def backward(self, y_true, y_pred):
-        return y_true - y_pred
+    def backward(self, y_pred, y_true):
+        return y_pred - y_true
 
 class CE(Loss):
     def __init__(self):
@@ -27,6 +27,7 @@ class CE(Loss):
         return
 
     def forward(self, y_pred, y_true):
+        print("y_pred", y_pred)
         return -np.mean(y_true*np.log(y_pred) + (1-y_true)*np.log(1-y_pred))
 
     def backward(self, y_pred, y_true):

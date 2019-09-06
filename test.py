@@ -1,8 +1,8 @@
 import numpy as np
 import csv
-#from layers import Sigmoid
-from layers import Tanh as Sigmoid
-from losses import MSE
+from layers import Sigmoid
+#from layers import Tanh as Sigmoid
+from losses import MSE, CE
 LAYER_LIST = [2, 3, 1]
 LEARNING_RATE = 0.1
 np.random.seed(0)
@@ -43,7 +43,7 @@ def sgd(X, y_true, layer_list, loss, batch_size=4, epochs=1):
 
 def sgd_step(X, y, layer_list, loss):
     if layer_list == []:
-        print("y_true {} \n y_pred {} \n\t\t loss {}".format(y, X, loss.forward(y, X)))
+        print("y_true {} \n y_pred {} \n\t\t loss {}".format(y, X, loss.forward(X, y)))
         return loss.backward(X, y)
     else:
         layer = layer_list[0]
@@ -61,12 +61,14 @@ if __name__ == '__main__':
     with open("dataset.csv", "r") as f:
         dataset = np.array(list(csv.reader(f, delimiter=",")), dtype=np.float64)
     layers = [Layer(i, o) for i, o in zip(LAYER_LIST, LAYER_LIST[1:])]
-    loss = MSE()
-    dataset[dataset[:, 2] == 0, 2] = -1
+    #loss = MSE()
+    loss = CE()
+    #dataset[dataset[:, 2] == 0, 2] = -1
+    dataset = dataset[:8, :]
     sgd(dataset[:, :2], dataset[:, 2:],
         layers,
         loss,
-        batch_size=32,
+        batch_size=4,
         epochs=1000)
     #TODO:
     # - refactor layer class
