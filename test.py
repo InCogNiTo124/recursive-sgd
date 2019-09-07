@@ -68,6 +68,7 @@ def sgd_step(X, y, layer_list, loss):
 if __name__ == '__main__':
     with open("dataset.csv", "r") as f:
         dataset = np.array(list(csv.reader(f, delimiter=",")), dtype=np.float64)
+
     layers = [Layer(i, o, ACTIVATION_DICT[a]) for i, o, a in zip(LAYER_LIST, LAYER_LIST[1:], ACTIVATION_LIST)]
     #loss = MSE()
     loss = CE()
@@ -92,7 +93,6 @@ if __name__ == '__main__':
     import matplotlib.pyplot as plt
     plt.scatter(a[:, 0], a[:, 1], c=y_test.flatten().astype(int), s=1)
     plt.show()
-
     #TODO:
     # - refactor layer class
     # - add Tanh and relu activation
