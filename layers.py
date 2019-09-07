@@ -20,3 +20,12 @@ class Tanh():
     def backward(self, delta):
         return (1-delta) * (1+delta)
 
+class ReLU():
+    def __init__(self):
+        return
+
+    def forward(self, X):
+        return X * (X >= 0)
+
+    def backward(self, delta):
+        return (delta >= 0).astype(np.float64)

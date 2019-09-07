@@ -1,9 +1,11 @@
 import numpy as np
 import csv
-from layers import Sigmoid
-#from layers import Tanh as Sigmoid
+from layers import Sigmoid, ReLU, Tanh
 from losses import MSE, CE
-LAYER_LIST = [2, 3, 1]
+ACTIVATION_DICT = {"relu": ReLU(), "sigmoid": Sigmoid(), "tanh": Tanh()}
+
+LAYER_LIST = [2, 8, 14, 6, 1]
+ACTIVATION_LIST = ["relu", "sigmoid", "tanh", "sigmoid"]
 LEARNING_RATE = 0.1
 np.random.seed(0)
 
@@ -21,14 +23,18 @@ class Linear():
         return self.W.T.dot(delta)
 
 class Layer():
-    def __init__(self, in_dim, out_dim, activation=Sigmoid()):
+    def __init__(self, in_dim, out_dim, activation=None):
         assert in_dim > 0
         assert out_dim > 0
         assert type(in_dim) == type(0) # INT
         assert type(out_dim) == type(0) # INT
         self.lin = Linear(in_dim, out_dim)
-        self.nlin = activation
+        self.nlin = activation if activation is not None else Sigmoid()
         return
+
+    def forward(self, X):
+        return self.nlin.forward(self.lin.forward(X))
+
 
 def sgd(X, y_true, layer_list, loss, batch_size=4, epochs=1):
     for epoch in range(1, epochs+1):
@@ -52,24 +58,41 @@ def sgd_step(X, y, layer_list, loss):
         grad = sgd_step(a, y, layer_list[1:], loss)
         n_grad = grad * layer.nlin.backward(a)
         dw = n_grad.dot(X.T)
+        db = np.mean(n_grad, axis=1, keepdims=True)
         assert dw.shape == layer.lin.W.shape
         l_grad = layer.lin.W.T @ n_grad
         layer.lin.W -= LEARNING_RATE*dw
+        layer.lin.b -= LEARNING_RATE*db
         return l_grad
 
 if __name__ == '__main__':
     with open("dataset.csv", "r") as f:
         dataset = np.array(list(csv.reader(f, delimiter=",")), dtype=np.float64)
-    layers = [Layer(i, o) for i, o in zip(LAYER_LIST, LAYER_LIST[1:])]
+
+    layers = [Layer(i, o, ACTIVATION_DICT[a]) for i, o, a in zip(LAYER_LIST, LAYER_LIST[1:], ACTIVATION_LIST)]
     #loss = MSE()
     loss = CE()
     #dataset[dataset[:, 2] == 0, 2] = -1
-    dataset = dataset[:8, :]
+    #dataset = dataset[:8, :]
     sgd(dataset[:, :2], dataset[:, 2:],
         layers,
         loss,
-        batch_size=4,
-        epochs=1000)
+        batch_size=8,
+        epochs=200)
+    # TESTING
+    x = np.arange(0, 1, 1/100)
+    y = np.arange(0, 1, 1/100)
+    a = np.transpose([np.tile(x, len(y)), np.repeat(y, len(x))])
+    y_test = a.copy().T
+    for layer in layers:
+       y_test = layer.forward(y_test)
+    THR = 0.5 
+    y_test[y_test >= THR] = 1
+    y_test[y_test < THR] = 0
+
+    import matplotlib.pyplot as plt
+    plt.scatter(a[:, 0], a[:, 1], c=y_test.flatten().astype(int), s=1)
+    plt.show()
     #TODO:
     # - refactor layer class
     # - add Tanh and relu activation
