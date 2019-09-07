@@ -4,9 +4,9 @@ from layers import Sigmoid, ReLU, Tanh
 from losses import MSE, CE
 ACTIVATION_DICT = {"relu": ReLU(), "sigmoid": Sigmoid(), "tanh": Tanh()}
 
-LAYER_LIST = [2, 8, 14, 6, 1]
+LAYER_LIST = [2, 8, 9, 4, 1]
 ACTIVATION_LIST = ["relu", "sigmoid", "tanh", "sigmoid"]
-LEARNING_RATE = 0.1
+LEARNING_RATE = 0.03
 np.random.seed(0)
 
 
@@ -36,14 +36,18 @@ class Layer():
         return self.nlin.forward(self.lin.forward(X))
 
 
-def sgd(X, y_true, layer_list, loss, batch_size=4, epochs=1):
+def sgd(X, y_true, layer_list, loss, batch_size=4, epochs=1, shuffle=False):
     for epoch in range(1, epochs+1):
         #print("EPOCH: {}".format(epoch))
+        if shuffle:
+            indices = np.random.permutation(X.shape[0])
+        else:
+            indices = np.arange(X.shape[0])
         for i in range(X.shape[0]//batch_size):
             start = i*batch_size
             end = start + batch_size
-            X_batch = X[start:end, :]
-            y_batch = y_true[start:end, :]
+            X_batch = X[indices[start:end], :]
+            y_batch = y_true[indices[start:end], :]
             sgd_step(X_batch.T, y_batch.T, layer_list, loss)
     return
 
@@ -78,7 +82,8 @@ if __name__ == '__main__':
         layers,
         loss,
         batch_size=8,
-        epochs=200)
+        epochs=200,
+        shuffle=True)
     # TESTING
     x = np.arange(0, 1, 1/100)
     y = np.arange(0, 1, 1/100)
