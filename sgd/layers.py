@@ -24,7 +24,7 @@ class Sigmoid(BaseTransform):
         a = self.forward(X)
         return a * (1-a) * grad
 
-class Tanh():
+class Tanh(BaseTransform):
     def __init__(self):
         return
 
@@ -84,3 +84,4 @@ class AddBias(BaseTransform):
 
     def get_weights(self):
         return self.b
+

@@ -203,4 +203,4 @@ tags
 .nvimrc
 *.patch
 activate
-
+*gmon.out
