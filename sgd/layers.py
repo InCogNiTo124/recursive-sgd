@@ -1,7 +1,5 @@
 import numpy as np
-from rop import read_only_properties
 
-@read_only_properties('trainable')
 class BaseTransform():
     def __init__(self, trainable=False, next_one=None):
         self.trainable = trainable
@@ -22,9 +20,9 @@ class Sigmoid(BaseTransform):
     def forward(self, X):
         return 1 / (1 + np.exp(-X))
 
-    def backward(self, X):
+    def backward(self, X, grad):
         a = self.forward(X)
-        return np.diagflat(a * (1 - a))
+        return a * (1-a) * grad
 
 class Tanh():
     def __init__(self):
@@ -33,30 +31,32 @@ class Tanh():
     def forward(self, X):
         return np.tanh(X)
 
-    def backward(self, delta):
-        return (1-delta) * (1+delta)
+    def backward(self, X, grad):
+        a = self.forward(X)
+        return (1-a) * (1+a) * grad
 
-class ReLU():
+class ReLU(BaseTransform):
     def __init__(self):
+        super().__init__()
         return
 
     def forward(self, X):
         return X * (X >= 0)
 
-    def backward(self, delta):
-        return (delta >= 0).astype(np.float64)
+    def backward(self, X, grad):
+        return (X >= 0) * grad
 
 class Linear(BaseTransform):
     def __init__(self, in_dim, out_dim):
         super().__init__(True)
-        self.W = np.random.randn(out_dim, in_dim)*0.1
+        self.W = np.random.randn(out_dim, in_dim)*0.5
         return
 
     def forward(self, X):
         return self.W.dot(X)
 
-    def backward(self, X):
-        return self.W.T
+    def backward(self, X, grad):
+        return self.W.T @ grad
 
     def update(self, X, delta, LR):
         dw = delta @ X.T
@@ -75,9 +75,8 @@ class AddBias(BaseTransform):
     def forward(self, X):
         return X + self.b
 
-    def backward(self, X):
-        #return delta
-        return np.eye(X.shape[1], dtype=np.float64)
+    def backward(self, X, grad):
+        return grad
 
     def update(self, X, delta, LR):
         self.b -= LR * np.mean(delta, axis=1, keepdims=True)
