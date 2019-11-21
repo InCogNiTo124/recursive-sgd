@@ -201,4 +201,7 @@ tags
 [._]*.un~
 
 # End of https://www.gitignore.io/api/c,vim,python
+.nvimrc
+*.patch
+./activate
 
