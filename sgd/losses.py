@@ -27,7 +27,6 @@ class CE(Loss):
         return
 
     def forward(self, y_pred, y_true):
-        print("y_pred", y_pred)
         return -np.mean(y_true*np.log(y_pred) + (1-y_true)*np.log(1-y_pred))
 
     def backward(self, y_pred, y_true):

@@ -1,4 +1,3 @@
-# Created by https://www.gitignore.io/api/c,vim,python
 # Edit at https://www.gitignore.io/?templates=c,vim,python
 
 ### C ###
@@ -201,4 +200,7 @@ tags
 [._]*.un~
 
 # End of https://www.gitignore.io/api/c,vim,python
-
+.nvimrc
+*.patch
+activate
+*gmon.out
