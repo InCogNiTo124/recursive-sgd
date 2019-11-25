@@ -18,3 +18,6 @@ class Model():
             layer = layer.next
         return X
 
+    def __call__(self, X):
+        return self.forward(X)
+
