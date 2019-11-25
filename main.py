@@ -64,8 +64,7 @@ if __name__ == '__main__':
     import matplotlib.pyplot as plt
     plt.scatter(a[:, 0], a[:, 1], c=y_test.flatten().astype(int), s=1)
     plt.show()
-    #TODO:
-    # - refactor layer class
-    # - add Tanh and relu activation
+    # TODO:
+    # - Add model saving and loading and evaluation mode
     # - make python cli interface
     #"""
