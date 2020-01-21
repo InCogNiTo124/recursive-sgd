@@ -16,7 +16,7 @@ class MSE(Loss):
         return
 
     def forward(self, y_pred, y_true):
-        assert y_pred.shape == y-true.shape
+        assert y_pred.shape == y_true.shape
         return np.mean((y_true - y_pred)**2)
 
     def backward(self, y_pred, y_true):
