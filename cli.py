@@ -46,6 +46,10 @@ def parse_train(arguments):
             MODEL.add_next(AddBias(last_layer_size))
         elif arg in ['-s']:
             MODEL.add_next(Sigmoid())
+        elif arg in ['-t']:
+            MODEL.add_next(Tanh())
+        elif arg in ['-r']:
+            MODEL.add_next(ReLU())
         elif arg  in ['--loss']:
             i += 1
             config.loss = LOSSES[arguments[i]]
