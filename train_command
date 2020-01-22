@@ -1,0 +1,1 @@
+python cli.py train -d dataset.csv -i 2 -l 5 -b -s -l 1 -b -s --loss CE --lr 0.01 --epochs 100 --batch-size 8

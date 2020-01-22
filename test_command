@@ -1,0 +1,1 @@
+python cli.py test -m MODEL.sgd -d dataset.csv -i 2 --metrics accuracy

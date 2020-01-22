@@ -204,3 +204,6 @@ tags
 *.patch
 activate
 *gmon.out
+*token
+deploy
+upload
