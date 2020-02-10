@@ -11,12 +11,13 @@ The gist of it is in the `sgd_step` function of `recursive_sgd/sgd.py`.
 *The answer is left as an exercise to the reader*
 
 ## Installation
-For now, the usual:
-`git clone https://github.com/InCogNiTo124/recursive-sgd.git && cd recursive-sgd && python3 setup.py build`
-
-TODO: make pip installable with
-`pip3 install recursive-sgd`
-
+Ordinary `pip3 install recursive-sgd` does the trick.
+Alternatively, one can use:
+```
+git clone https://github.com/InCogNiTo124/recursive-sgd.git
+cd recursive-sgd
+python3 setup.py install
+```
 ## Usage
 There's a CLI available.
 ### Training

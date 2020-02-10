@@ -5,7 +5,7 @@ with open('README.md', 'r') as file:
 
 setuptools.setup(
     name="recursive_sgd",
-    version="0.4.2",
+    version="0.5",
     author="Marijan Smetko",
     author_email="marijan.smetko@gmail.com",
     description="Train a neural network - with recursion!",
@@ -18,5 +18,5 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     classifiers=[],
     python_requires='>=3.4',
-    install_requires=['numpy']
+    install_requires=['numpy>=1.17']
 )
